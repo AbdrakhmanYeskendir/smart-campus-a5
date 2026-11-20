@@ -81,6 +81,7 @@ export function canBook(args: {
     name: '',
     building: '',
     capacity: 0,
+    equipment: [],
     blocked: args.blocked,
     bookings: args.bookings.map((b) => ({ ...b, title: '' })),
   };
