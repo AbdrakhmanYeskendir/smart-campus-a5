@@ -14,6 +14,12 @@ import { ROOMS } from './data';
 import type { AvailabilityDecision, Room } from './types';
 import { checkAvailability } from './lib/availability';
 import { minutesToLabel, labelToMinutes } from './lib/time';
+import {
+  collectEquipment,
+  emptyStateMessage,
+  filterRooms,
+  parseAttendees,
+} from './lib/filter';
 
 function App() {
   const [roomId, setRoomId] = useState<string>(ROOMS[0].id);
@@ -22,13 +28,45 @@ function App() {
   const [decision, setDecision] = useState<AvailabilityDecision | null>(null);
   const [currentTime, setCurrentTime] = useState('08:30');
 
-  const room = useMemo<Room>(
-    () => ROOMS.find((r) => r.id === roomId) ?? ROOMS[0],
-    [roomId]
+  const [attendees, setAttendees] = useState('');
+  const [requiredEquipment, setRequiredEquipment] = useState<string[]>([]);
+
+  const equipmentOptions = useMemo(() => collectEquipment(ROOMS), []);
+  const attendeesInfo = parseAttendees(attendees);
+  const visibleRooms = useMemo(
+    () =>
+      filterRooms(ROOMS, {
+        minCapacity: attendeesInfo.minCapacity,
+        requiredEquipment,
+      }),
+    [attendeesInfo.minCapacity, requiredEquipment]
   );
+  const emptyMessage = emptyStateMessage(visibleRooms.length);
+  const room: Room | null = visibleRooms.find((r) => r.id === roomId) ?? null;
+
+  function updateFilters(nextAttendees: string, nextEquipment: string[]) {
+    const nextVisible = filterRooms(ROOMS, {
+      minCapacity: parseAttendees(nextAttendees).minCapacity,
+      requiredEquipment: nextEquipment,
+    });
+    setAttendees(nextAttendees);
+    setRequiredEquipment(nextEquipment);
+    if (!nextVisible.some((r) => r.id === roomId)) {
+      setRoomId(nextVisible[0]?.id ?? '');
+    }
+    setDecision(null);
+  }
+
+  function toggleEquipment(item: string) {
+    const next = requiredEquipment.includes(item)
+      ? requiredEquipment.filter((i) => i !== item)
+      : [...requiredEquipment, item];
+    updateFilters(attendees, next);
+  }
 
   function handleCheck(e: React.FormEvent) {
     e.preventDefault();
+    if (!room) return;
     const start = labelToMinutes(startTime);
     const end = labelToMinutes(endTime);
 
@@ -97,13 +135,85 @@ function App() {
               />
             </div>
 
+            {/* Requirements (F1 capacity, F2 equipment) */}
+            <div className="rounded-xl border border-slate-200 bg-white p-5">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Requirements
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
+                <div>
+                  <label
+                    htmlFor="attendees"
+                    className="mb-1.5 block text-sm font-medium text-slate-700"
+                  >
+                    Attendees
+                  </label>
+                  <input
+                    id="attendees"
+                    type="number"
+                    min={1}
+                    inputMode="numeric"
+                    placeholder="e.g. 12"
+                    value={attendees}
+                    onChange={(e) => updateFilters(e.target.value, requiredEquipment)}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+                  />
+                  {attendeesInfo.error && (
+                    <p role="alert" className="mt-1.5 text-xs text-rose-600">
+                      {attendeesInfo.error}
+                    </p>
+                  )}
+                </div>
+                <fieldset>
+                  <legend className="mb-1.5 block text-sm font-medium text-slate-700">
+                    Required equipment (all selected)
+                  </legend>
+                  <div className="flex flex-wrap gap-2">
+                    {equipmentOptions.map((item) => (
+                      <label
+                        key={item}
+                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={requiredEquipment.includes(item)}
+                          onChange={() => toggleEquipment(item)}
+                        />
+                        {item}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                <span aria-live="polite">
+                  {visibleRooms.length} of {ROOMS.length} rooms match
+                </span>
+                <button
+                  type="button"
+                  onClick={() => updateFilters('', [])}
+                  className="font-medium text-emerald-700 hover:underline"
+                >
+                  Clear filters
+                </button>
+              </div>
+            </div>
+
             {/* Room cards */}
             <div>
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Select a room
               </h2>
+              {emptyMessage && (
+                <div
+                  role="status"
+                  className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500"
+                >
+                  {emptyMessage}
+                </div>
+              )}
               <div className="grid gap-3 sm:grid-cols-2">
-                {ROOMS.map((r) => {
+                {visibleRooms.map((r) => {
                   const selected = r.id === roomId;
                   return (
                     <button
@@ -148,6 +258,16 @@ function App() {
                           {r.capacity}
                         </span>
                       </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {r.equipment.map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-md bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
                     </button>
                   );
                 })}
@@ -161,7 +281,7 @@ function App() {
             >
               <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Check availability for{' '}
-                <span className="text-slate-900">{room.name}</span>
+                <span className="text-slate-900">{room ? room.name : '—'}</span>
               </h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -206,7 +326,8 @@ function App() {
 
               <button
                 type="submit"
-                className="mt-5 w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 active:scale-[0.99] sm:w-auto"
+                disabled={!room}
+                className="mt-5 w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 Check Availability
               </button>
@@ -234,7 +355,7 @@ function App() {
                     Available
                   </p>
                   <p className="text-sm text-slate-500">
-                    {room.name} is free from{' '}
+                    {room?.name} is free from{' '}
                     <strong>{startTime}</strong> to{' '}
                     <strong>{endTime}</strong>.
                   </p>
@@ -258,10 +379,14 @@ function App() {
             {/* Existing schedule for selected room */}
             <div className="rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                {room.name} — existing bookings
+                {room ? room.name : 'No room'} — existing bookings
               </h2>
 
-              {room.blocked ? (
+              {!room ? (
+                <p className="text-sm text-slate-400">
+                  Select a room to see its bookings.
+                </p>
+              ) : room.blocked ? (
                 <div className="flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-3 text-sm text-rose-700">
                   <DoorClosed className="h-4 w-4" />
                   {room.blockReason}
