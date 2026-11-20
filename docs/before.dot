@@ -1,0 +1,9 @@
+digraph G { rankdir=TB; node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11]; edge [fontname="Helvetica", fontsize=10];
+ subgraph cluster_ui { label="src/App.tsx (304 lines, one component)"; style="rounded,filled"; fillcolor="#fde8e8"; color="#d9534f";
+  a [label="UI markup\n(cards, form, result, bookings)", fillcolor="white"];
+  b [label="screen state\n(5 useState + 4 resets)", fillcolor="white"];
+  c [label="HH:MM parsing +\nformat-error messages", fillcolor="white"]; }
+ av [label="lib/availability.ts\nAC1-AC5 rules (pure)", fillcolor="#e6f4ea"];
+ tm [label="lib/time.ts", fillcolor="#e6f4ea"];
+ dt [label="data.ts (4 rooms,\nno equipment)", fillcolor="#e6f4ea"];
+ c -> av [label="checkAvailability"]; a -> tm; b -> dt; a -> b; c -> b; }
