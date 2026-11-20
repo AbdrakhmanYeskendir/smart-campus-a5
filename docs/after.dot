@@ -1,5 +1,5 @@
 digraph G { rankdir=TB; node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11]; edge [fontname="Helvetica", fontsize=10];
- app [label="App.tsx (104 lines)\nwires state to components", fillcolor="white3cd"];
+ app [label="App.tsx (104 lines)\nwires state to components", fillcolor="#fff3cd"];
  subgraph cluster_ui { label="Presentation: src/components"; style="rounded,filled"; fillcolor="#e8f0fe"; color="#4a7bd0";
   c1 [label="FilterPanel\nRoomList\nAvailabilityForm", fillcolor="white"]; c2 [label="ResultPanel\nBookingsPanel\nCurrentTimeBar", fillcolor="white"]; c3 [label="Panel, Field, styles\n(shared)", fillcolor="white"]; }
  subgraph cluster_logic { label="Pure logic: src/lib (no React)"; style="rounded,filled"; fillcolor="#e6f4ea"; color="#3c9a5f";
