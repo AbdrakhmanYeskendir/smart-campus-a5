@@ -56,7 +56,10 @@ export function createInitialState(rooms: readonly Room[], currentTime: string):
 
 /**
  * Builds the reducer for a given catalog. Pure: never mutates the previous state
- * or the rooms. Every input change clears the previous decision (F5).
+ * or the rooms.
+ *
+ * F5 rule, written once: every input change (room, filters, times) clears the
+ * previous decision; only the explicit 'check' action produces a new one.
  */
 export function createReducer(rooms: readonly Room[]) {
   // After a filter change keep the selection if it is still visible, otherwise
@@ -64,18 +67,15 @@ export function createReducer(rooms: readonly Room[]) {
   function withFilters(next: AppState): AppState {
     const visible = visibleRooms(rooms, next);
     const keep = visible.some((room) => room.id === next.roomId);
-    return {
-      ...next,
-      roomId: keep ? next.roomId : (visible[0]?.id ?? ''),
-      decision: null,
-    };
+    return { ...next, roomId: keep ? next.roomId : (visible[0]?.id ?? '') };
   }
 
-  return function reducer(state: AppState, action: Action): AppState {
+  // The input part of every action, without touching the decision.
+  function applyInput(state: AppState, action: Exclude<Action, { type: 'check' }>): AppState {
     switch (action.type) {
       case 'selectRoom': {
         const allowed = visibleRooms(rooms, state).some((room) => room.id === action.roomId);
-        return allowed ? { ...state, roomId: action.roomId, decision: null } : state;
+        return allowed ? { ...state, roomId: action.roomId } : state;
       }
       case 'setAttendees':
         return withFilters({ ...state, attendees: action.value });
@@ -88,23 +88,28 @@ export function createReducer(rooms: readonly Room[]) {
       case 'clearFilters':
         return withFilters({ ...state, attendees: '', requiredEquipment: [] });
       case 'setStartTime':
-        return { ...state, startTime: action.value, decision: null };
+        return { ...state, startTime: action.value };
       case 'setEndTime':
-        return { ...state, endTime: action.value, decision: null };
+        return { ...state, endTime: action.value };
       case 'setCurrentTime':
-        return { ...state, currentTime: action.value, decision: null };
-      case 'check': {
-        const room = selectedRoom(rooms, state);
-        if (!room) return state;
-        return {
-          ...state,
-          decision: evaluateRequest(room, {
-            start: state.startTime,
-            end: state.endTime,
-            now: state.currentTime,
-          }),
-        };
-      }
+        return { ...state, currentTime: action.value };
     }
+  }
+
+  return function reducer(state: AppState, action: Action): AppState {
+    if (action.type === 'check') {
+      const room = selectedRoom(rooms, state);
+      if (!room) return state;
+      return {
+        ...state,
+        decision: evaluateRequest(room, {
+          start: state.startTime,
+          end: state.endTime,
+          now: state.currentTime,
+        }),
+      };
+    }
+    const next = applyInput(state, action);
+    return next === state ? state : { ...next, decision: null };
   };
 }
