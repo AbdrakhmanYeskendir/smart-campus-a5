@@ -1,0 +1,121 @@
+
+ RUN  v2.1.9 C:/Users/HP/Downloads/files/smart-campus-assignment04/project
+
+ ✓ src/data.test.ts (6 tests) 5ms
+ ✓ src/lib/availability.test.ts (1 test) 2ms
+ ✓ src/lib/availability.extra.test.ts (2 tests) 4ms
+ ✓ src/lib/availabilityRequest.test.ts (13 tests) 6ms
+ ✓ src/lib/booking.test.ts (17 tests) 7ms
+ ✓ src/lib/legacyBooking.test.ts (2 tests) 19ms
+ ✓ src/lib/state.test.ts (12 tests) 11ms
+ ✓ src/lib/filter.test.ts (15 tests) 25ms
+ ❯ src/lib/mitigations.test.ts (10 tests | 9 failed) 23ms
+   × M1 (R1): no availability check while the attendees value is invalid > M1-01 "abc": the check is refused and no decision is shown 13ms
+     → expected { status: 'unavailable', …(1) } to be null
+   × M1 (R1): no availability check while the attendees value is invalid > M1-01 "12.5": the check is refused and no decision is shown 1ms
+     → expected { status: 'unavailable', …(1) } to be null
+   × M1 (R1): no availability check while the attendees value is invalid > M1-01 "-3": the check is refused and no decision is shown 1ms
+     → expected { status: 'unavailable', …(1) } to be null
+   × M1 (R1): no availability check while the attendees value is invalid > M1-01 "0": the check is refused and no decision is shown 1ms
+     → expected { status: 'unavailable', …(1) } to be null
+   × M1 (R1): no availability check while the attendees value is invalid > M1-01 "1e2": the check is refused and no decision is shown 1ms
+     → expected { status: 'unavailable', …(1) } to be null
+   × M1 (R1): no availability check while the attendees value is invalid > M1-03 after correcting the value the check works again 1ms
+     → canCheck is not a function
+   × M1 (R1): no availability check while the attendees value is invalid > M1-04 blank attendees (no requirement) can still be checked 1ms
+     → canCheck is not a function
+   × M2 (R2): the room catalog cannot be mutated at runtime > M2-01 the catalog, every room, booking list, booking and equipment list are frozen 3ms
+     → expected false to be true // Object.is equality
+   × M2 (R2): the room catalog cannot be mutated at runtime > M2-02 an attempt to add a booking or edit a room throws and changes nothing 1ms
+     → expected function to throw an error, but it didn't
+ ✓ src/lib/integration.test.ts (9 tests) 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-01 "abc": the check is refused and no decision is shown
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-01 "12.5": the check is refused and no decision is shown
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-01 "-3": the check is refused and no decision is shown
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-01 "0": the check is refused and no decision is shown
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-01 "1e2": the check is refused and no decision is shown
+AssertionError: expected { status: 'unavailable', …(1) } to be null
+
+- Expected: 
+null
+
++ Received: 
+Object {
+  "reason": "Overlaps existing booking \"Intro to Design\" (10:00–11:00).",
+  "status": "unavailable",
+}
+
+ ❯ src/lib/mitigations.test.ts:17:30
+     15|     it(`M1-01 "${value}": the check is refused and no decision is show…
+     16|       const state = run([{ type: 'setAttendees', value }, { type: 'che…
+     17|       expect(state.decision).toBeNull();
+       |                              ^
+     18|       expect(canCheck(ROOMS, state)).toBe(false);
+     19|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-03 after correcting the value the check works again
+TypeError: canCheck is not a function
+ ❯ src/lib/mitigations.test.ts:33:12
+     31|       { type: 'check' },
+     32|     ]);
+     33|     expect(canCheck(ROOMS, state)).toBe(true);
+       |            ^
+     34|     expect(state.decision).not.toBeNull();
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/lib/mitigations.test.ts > M1 (R1): no availability check while the attendees value is invalid > M1-04 blank attendees (no requirement) can still be checked
+TypeError: canCheck is not a function
+ ❯ src/lib/mitigations.test.ts:39:12
+     37|   it('M1-04 blank attendees (no requirement) can still be checked', ()…
+     38|     const state = run([{ type: 'check' }]);
+     39|     expect(canCheck(ROOMS, initial())).toBe(true);
+       |            ^
+     40|     expect(state.decision).not.toBeNull();
+     41|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/lib/mitigations.test.ts > M2 (R2): the room catalog cannot be mutated at runtime > M2-01 the catalog, every room, booking list, booking and equipment list are frozen
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/mitigations.test.ts:48:36
+     46| describe('M2 (R2): the room catalog cannot be mutated at runtime', () …
+     47|   it('M2-01 the catalog, every room, booking list, booking and equipme…
+     48|     expect(Object.isFrozen(ROOMS)).toBe(true);
+       |                                    ^
+     49|     for (const room of ROOMS) {
+     50|       expect(Object.isFrozen(room)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/lib/mitigations.test.ts > M2 (R2): the room catalog cannot be mutated at runtime > M2-02 an attempt to add a booking or edit a room throws and changes nothing
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/lib/mitigations.test.ts:59:80
+     57|   it('M2-02 an attempt to add a booking or edit a room throws and chan…
+     58|     const before = JSON.stringify(ROOMS);
+     59|     expect(() => ROOMS[0].bookings.push({ start: 700, end: 720, title:…
+       |                                                                                ^
+     60|     expect(() => {
+     61|       ROOMS[1].blocked = false;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  9 failed | 78 passed (87)
+   Start at  14:04:49
+   Duration  2.05s (transform 721ms, setup 0ms, collect 1.27s, tests 147ms, environment 3ms, prepare 2.33s)
+
+EXIT=1
