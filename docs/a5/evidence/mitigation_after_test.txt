@@ -1,0 +1,24 @@
+
+> vite-react-typescript-starter@0.0.0 test
+> vitest run
+
+
+ RUN  v2.1.9 C:/Users/HP/Downloads/files/smart-campus-assignment04/project
+
+ ✓ src/data.test.ts (6 tests) 7ms
+ ✓ src/lib/availability.test.ts (1 test) 4ms
+ ✓ src/lib/availability.extra.test.ts (2 tests) 6ms
+ ✓ src/lib/availabilityRequest.test.ts (13 tests) 10ms
+ ✓ src/lib/booking.test.ts (17 tests) 12ms
+ ✓ src/lib/mitigations.test.ts (10 tests) 12ms
+ ✓ src/lib/state.test.ts (12 tests) 14ms
+ ✓ src/lib/legacyBooking.test.ts (2 tests) 31ms
+ ✓ src/lib/filter.test.ts (15 tests) 37ms
+ ✓ src/lib/integration.test.ts (9 tests) 64ms
+
+ Test Files  10 passed (10)
+      Tests  87 passed (87)
+   Start at  14:05:11
+   Duration  2.00s (transform 1.03s, setup 0ms, collect 1.92s, tests 196ms, environment 3ms, prepare 2.67s)
+
+EXIT=0

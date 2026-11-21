@@ -4,7 +4,20 @@ export const SUPPLIED_CURRENT_TIME = 510; // 08:30
 
 // Fictional catalog: every room has an id, name, capacity, equipment list,
 // blocked status and its own bookings (minutes after midnight).
-export const ROOMS: Room[] = [
+/**
+ * R2 mitigation: freezes the catalog and everything inside it, so code that tries
+ * to add a booking or edit a room throws a TypeError instead of silently changing
+ * the shared data (AC5).
+ */
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.values(value).forEach(deepFreeze);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+export const ROOMS: Room[] = deepFreeze([
   {
     id: 'a-101',
     name: 'A-101',
@@ -69,4 +82,4 @@ export const ROOMS: Room[] = [
     blocked: false,
     bookings: [{ start: 720, end: 780, title: 'Study Group' }],
   },
-];
+]);

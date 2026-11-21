@@ -17,7 +17,7 @@ never change what these rules mean. It may only add rules that the human asked f
 ## 2. Architecture (one direction only: UI -> state -> rules -> data)
 | Layer | Files | Rule |
 |---|---|---|
-| Data | `src/data.ts`, `src/types.ts` | Fictional catalog. Never mutate it. |
+| Data | `src/data.ts`, `src/types.ts` | Fictional catalog, deep-frozen at runtime (R2). Never mutate it; copy it. |
 | Rules (pure) | `src/lib/availability.ts`, `time.ts`, `filter.ts`, `availabilityRequest.ts` | No React, no I/O, no global state. |
 | Adapter | `src/lib/legacyBooking.ts` | `canBook`, the old Practice #07 signature, adapted to `checkAvailability`. No rules here. |
 | State (pure) | `src/lib/state.ts` | Reducer. Every input change clears the result (F5). |

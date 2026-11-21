@@ -43,7 +43,7 @@ src/components/                 presentation only: Panel, Field, FilterPanel, Ro
 src/App.tsx                     wires the reducer to the components
 ```
 
-## Requirement -> test mapping (75 tests)
+## Requirement -> test mapping (87 tests)
 | Requirement | Tests |
 |---|---|
 | AC1 invalid / past time | T02, T03, T04, T05, T22, T23, T24, T32, T33, T34, P01 |
@@ -60,6 +60,8 @@ src/App.tsx                     wires the reducer to the components
 | UI behaviour (reducer, no DOM needed) | S01 .. S12 |
 | Refactoring parity | P01, P02, P03 |
 | Catalog integrity | D01 .. D06 |
+| A5 mitigation R1: no check with invalid attendees | M1-01 .. M1-04 |
+| A5 mitigation R2: frozen catalog | M2-01, M2-02 |
 
 ## Git history (commit references)
 ```
