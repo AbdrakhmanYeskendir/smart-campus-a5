@@ -32,7 +32,8 @@ node scripts/dup_report.mjs src      # duplication report used in the report
 ```
 src/data.ts                     room catalog (6 rooms, equipment, blocked flag, own bookings)
 src/types.ts                    Room, Booking, AvailabilityDecision
-src/lib/availability.ts         AC1-AC5 rules (unchanged), checkAvailability / validateInterval / canBook
+src/lib/availability.ts         AC1-AC5 rules (unchanged), checkAvailability / validateInterval
+src/lib/legacyBooking.ts        Adapter: legacy canBook(args) -> checkAvailability (A5 refactor)
 src/lib/availabilityRequest.ts  parses the HH:MM form input and calls the rules
 src/lib/filter.ts               F1, F2, F4: filterRooms, parseAttendees, emptyStateMessage
 src/lib/state.ts                reducer for the screen: filters, selection, F5 rule
@@ -57,7 +58,7 @@ src/App.tsx                     wires the reducer to the components
 | F5 room switching refreshes the result | S02, S03, S04, S05, S06, S09, I03 |
 | Integration (filters -> selected room -> rules) | I01 .. I08 |
 | UI behaviour (reducer, no DOM needed) | S01 .. S12 |
-| Refactoring parity | P01 |
+| Refactoring parity | P01, P02, P03 |
 | Catalog integrity | D01 .. D06 |
 
 ## Git history (commit references)
@@ -73,4 +74,4 @@ b2e650c refactor(state): single rule that clears the result on any input change;
 ## Known limitations
 * No DOM/component tests: that would need extra dev dependencies. UI behaviour is covered at reducer level and by manual screenshots.
 * The visual layout on phones is checked manually only.
-* `canBook` still lives in `availability.ts` (kept so the 17 original tests stay unchanged).
+* `canBook` moved to `src/lib/legacyBooking.ts` in A5; the 17 original tests changed only their import line.

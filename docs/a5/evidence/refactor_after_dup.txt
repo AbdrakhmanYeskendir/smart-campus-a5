@@ -1,0 +1,8 @@
+{
+  "files": 19,
+  "significantLines": 667,
+  "duplicatedBlocks": 4,
+  "duplicatedLines": 12,
+  "repeatedLongLiterals": 1,
+  "extraCopiesOfLongLiterals": 1,
+  "blockLocations": [

@@ -68,22 +68,3 @@ export function checkAvailability(
   }
   return { status: 'available' };
 }
-
-export function canBook(args: {
-  start: number;
-  end: number;
-  now: number;
-  blocked: boolean;
-  bookings: { start: number; end: number }[];
-}): boolean {
-  const room: Room = {
-    id: '',
-    name: '',
-    building: '',
-    capacity: 0,
-    equipment: [],
-    blocked: args.blocked,
-    bookings: args.bookings.map((b) => ({ ...b, title: '' })),
-  };
-  return checkAvailability(room, args.start, args.end, args.now).status === 'available';
-}

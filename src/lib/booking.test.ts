@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { canBook } from './availability';
+import { canBook } from './legacyBooking';
 
 const NOW = 540;
 

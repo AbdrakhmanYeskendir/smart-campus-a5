@@ -18,7 +18,8 @@ never change what these rules mean. It may only add rules that the human asked f
 | Layer | Files | Rule |
 |---|---|---|
 | Data | `src/data.ts`, `src/types.ts` | Fictional catalog. Never mutate it. |
-| Rules (pure) | `src/lib/availability.ts` (also the legacy `canBook`), `time.ts`, `filter.ts`, `availabilityRequest.ts` | No React, no I/O, no global state. |
+| Rules (pure) | `src/lib/availability.ts`, `time.ts`, `filter.ts`, `availabilityRequest.ts` | No React, no I/O, no global state. |
+| Adapter | `src/lib/legacyBooking.ts` | `canBook`, the old Practice #07 signature, adapted to `checkAvailability`. No rules here. |
 | State (pure) | `src/lib/state.ts` | Reducer. Every input change clears the result (F5). |
 | UI | `src/App.tsx`, `src/components/*` | Presentation only. No business rules in components. |
 
