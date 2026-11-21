@@ -1,3 +1,6 @@
+f9ce378 chore(deps): remove unused @supabase/supabase-js (R3), approved by the student
+ca4e2e1 docs(a5): manual UI check uses values a number input accepts (12.5, 0, -3)
+326b592 docs(a5): A5 report (DOCX + PDF) and commit log
 58dc4ec fix(data): deep-freeze the room catalog so nothing can mutate shared bookings (R2)
 c735820 fix(state): refuse the availability check while the attendees value is invalid (R1)
 ad5af1a test: add failing tests M1 (invalid attendees must block the check) and M2 (catalog must be frozen)
