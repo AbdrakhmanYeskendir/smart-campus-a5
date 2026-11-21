@@ -1,0 +1,6 @@
+58dc4ec fix(data): deep-freeze the room catalog so nothing can mutate shared bookings (R2)
+c735820 fix(state): refuse the availability check while the attendees value is invalid (R1)
+ad5af1a test: add failing tests M1 (invalid attendees must block the check) and M2 (catalog must be frozen)
+8a29c16 refactor: move legacy canBook into an explicit Adapter module (legacyBooking.ts) with parity tests P02-P03
+3c34d5b docs: add AGENTS.md with architecture, safe commands, conventions, tests and forbidden actions
+7786ea5 docs(a5): baseline evidence: test, typecheck, lint, build and audit output at tag a5-baseline
