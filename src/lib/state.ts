@@ -42,6 +42,15 @@ export function selectedRoom(rooms: readonly Room[], state: AppState): Room | nu
   return visibleRooms(rooms, state).find((room) => room.id === state.roomId) ?? null;
 }
 
+/**
+ * R1 mitigation: a check may run only when a room is selected AND the attendees
+ * text is valid (blank = no requirement). Invalid text still hides no rooms (S12),
+ * but it can no longer produce a decision for a room that was never size-filtered.
+ */
+export function canCheck(rooms: readonly Room[], state: AppState): boolean {
+  return selectedRoom(rooms, state) !== null && parseAttendees(state.attendees).error === null;
+}
+
 export function createInitialState(rooms: readonly Room[], currentTime: string): AppState {
   return {
     roomId: rooms[0]?.id ?? '',
@@ -99,7 +108,7 @@ export function createReducer(rooms: readonly Room[]) {
   return function reducer(state: AppState, action: Action): AppState {
     if (action.type === 'check') {
       const room = selectedRoom(rooms, state);
-      if (!room) return state;
+      if (!room || !canCheck(rooms, state)) return state;
       return {
         ...state,
         decision: evaluateRequest(room, {

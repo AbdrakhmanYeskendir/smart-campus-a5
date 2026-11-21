@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { CalendarClock } from 'lucide-react';
 import { ROOMS, SUPPLIED_CURRENT_TIME } from './data';
 import { collectEquipment, emptyStateMessage, parseAttendees } from './lib/filter';
-import { createInitialState, createReducer, selectedRoom, visibleRooms } from './lib/state';
+import { canCheck, createInitialState, createReducer, selectedRoom, visibleRooms } from './lib/state';
 import { minutesToLabel } from './lib/time';
 import { AvailabilityForm } from './components/AvailabilityForm';
 import { BookingsPanel } from './components/BookingsPanel';
@@ -73,7 +73,7 @@ function App() {
               roomName={room?.name ?? null}
               startTime={state.startTime}
               endTime={state.endTime}
-              canSubmit={room !== null}
+              canSubmit={canCheck(ROOMS, state)}
               onStartChange={(value) => dispatch({ type: 'setStartTime', value })}
               onEndChange={(value) => dispatch({ type: 'setEndTime', value })}
               onSubmit={handleSubmit}
